@@ -75,12 +75,7 @@ dependencies = [
 ]
 
 [tasks.ci-flow]
-dependencies = [
-    "build-release",
-    "test",
-    "assets",
-    "bindgen",
-]
+dependencies = ["release"]
 
 [tasks.default]
 alias = "debug"
