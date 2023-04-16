@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Discretus</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script src="script.js"></script>
+
+    <script type="module">
+        import init, { add } from './wasm.js';
+
+        async function run() {
+            await init();
+
+            const result = add(1, 2);
+            console.log(`1 + 2 = ${result}`);
+            if (result !== 3)
+                throw new Error("wasm addition doesn't work!");
+        }
+
+        run();
+    </script>
+</head>
+
+<body>
+    <menu>
+        <div class="dropdown">
+            <button class="dropbtn">File</button>
+            <div class="dropdown-content">
+                <a href="#">Save...</a>
+                <a href="#">Load...</a>
+                <a href="#">Quit</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn">View</button>
+            <div class="dropdown-content">
+                <a href="#">Toggle all visualization</a>
+                <a href="#">Omit `&#8743;` character</a>
+            </div>
+        </div>
+    </menu>
+    <main>
+        <button>+</button>
+    </main>
+    <footer>Made by&nbsp;<a href="https://github.com/ClayenKitten">ClayenKitten</a>, 2023</footer>
+</body>
+
+</html>

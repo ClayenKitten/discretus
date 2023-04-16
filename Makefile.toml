@@ -1,0 +1,96 @@
+[tasks.dist]
+script = ["rm -rf dist/", "mkdir dist/"]
+
+[tasks.install-grass]
+install_crate = "grass"
+
+[tasks.install-wasm-bindgen]
+install_crate = "wasm-bindgen-cli"
+
+[tasks.install-dev-server]
+install_crate = "simple-http-server"
+
+[tasks.assets]
+dependencies = ["install-grass", "dist"]
+script = """\
+for file in $(find assets/*); do
+    if [ -d "$file" ]; then
+        mkdir -p "dist/${file##"assets/"}"
+    else
+        file=${file##"assets/"}
+        extension="${file##*.}"
+        if [ "$extension" = "scss" ] || [ "$extension" = "sass" ]; then
+            grass "assets/$file" "dist/${file%".$extension"}"."css"
+        else
+            cp "assets/$file" "dist/$file"
+        fi
+    fi
+done
+"""
+
+[tasks.build]
+command = "cargo"
+args = ["build", "--target", "wasm32-unknown-unknown"]
+
+[tasks.build-release]
+command = "cargo"
+args = ["build", "--target", "wasm32-unknown-unknown", "--release"]
+
+[tasks.bindgen]
+command = "wasm-bindgen"
+args = [
+    "--out-dir", "dist",
+    "--out-name", "wasm",
+    "--target", "web",
+    "--no-typescript",
+    "--debug",
+    "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/wasm32-unknown-unknown/debug/discretus.wasm"
+]
+dependencies = ["install-wasm-bindgen", "dist"]
+
+[tasks.bindgen-release]
+command = "wasm-bindgen"
+args = [
+    "--out-dir dist",
+    "--target web",
+    "--no-typescript",
+    "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/wasm32-unknown-unknown/release/discretus.wasm"
+]
+dependencies = ["install-wasm-bindgen"]
+
+[tasks.debug]
+dependencies = [
+    "build",
+    "test",
+    "assets",
+    "bindgen",
+]
+
+[tasks.release]
+dependencies = [
+    "build-release",
+    "test",
+    "assets",
+    "bindgen",
+]
+
+[tasks.ci-flow]
+dependencies = [
+    "build-release",
+    "test",
+    "assets",
+    "bindgen",
+]
+
+[tasks.default]
+alias = "debug"
+
+[tasks.watch]
+watch = true
+run_task = "debug"
+
+[tasks.serve]
+command = "simple-http-server"
+args = ["--index", "dist"]
+watch = true
+dependencies = ["install-dev-server", "dist", "debug"]
