@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 wasm-bindgen = "0.2.84"
 svg = "0.13.1"
+owned_chars = { git = "https://github.com/durka/owned-chars.git" }
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

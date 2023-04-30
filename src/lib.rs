@@ -1,4 +1,5 @@
 mod diagram;
+mod parse;
 
 use wasm_bindgen::prelude::*;
 
